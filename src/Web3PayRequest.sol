@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-interface IERC20 {
-    function transferFrom(address from, address to, uint256 amount) external returns (bool);
-}
+import {IERC20} from "@openzeppelin/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/token/ERC20/utils/SafeERC20.sol";
 
 contract Web3PayRequest {
+    using SafeERC20 for IERC20;
 
     enum RequestState {
         Pending,
@@ -120,7 +120,7 @@ contract Web3PayRequest {
             require(msg.sender == r.payer, "Not authorized payer");   
         }
 
-        IERC20(r.token).transferFrom(msg.sender, r.payee, r.amount);
+        IERC20(r.token).safeTransferFrom(msg.sender, r.payee, r.amount);
 
         r.state = RequestState.Paid;
 
